@@ -1,5 +1,6 @@
 import { BusinessRuleException } from '@/helpers/error/BusinessRuleException';
 import { CreateUserDto } from './dto/create-user.dto';
+import { FilterUserDto } from './dto/filter-user.dto';
 import { Injectable } from '@nestjs/common';
 import { PageDto } from '@/dto/page.dto';
 import { ResponseMessage } from '@/helpers/ResponseMessage';
@@ -35,8 +36,8 @@ export class UserService {
     return findAll;
   }
 
-  async getAllPaginated(page: PageDto) {
-    const findAllPaginated = await this.repository.findAllPaginated(page);
+  async getAllPaginated(page: PageDto, dto?: FilterUserDto) {
+    const findAllPaginated = await this.repository.findAllPaginated({ page, email: dto.email });
     return findAllPaginated;
   }
 

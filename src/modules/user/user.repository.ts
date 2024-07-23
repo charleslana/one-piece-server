@@ -84,15 +84,27 @@ export class UserRepository {
     return this.prisma.user.delete({ where });
   }
 
-  public async findAllPaginated(page: PageDto): Promise<UserPaginatedDto<User[]>> {
+  public async findAllPaginated(params: {
+    page: PageDto;
+    email?: string;
+  }): Promise<UserPaginatedDto<User[]>> {
+    const { page, email } = params;
     const { page: currentPage, pageSize } = page;
     const offset = (currentPage - 1) * pageSize;
     const take = pageSize;
+    const where: Prisma.UserWhereInput = {};
+    if (email) {
+      where.email = {
+        contains: email,
+        mode: 'insensitive',
+      };
+    }
     const [totalCount, users] = await Promise.all([
-      this.prisma.user.count(),
+      this.prisma.user.count({ where }),
       this.prisma.user.findMany({
         skip: offset,
         take,
+        where,
         orderBy: { id: 'desc' },
       }),
     ]);

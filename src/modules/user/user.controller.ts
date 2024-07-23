@@ -26,6 +26,7 @@ import {
   Query,
   Logger,
 } from '@nestjs/common';
+import { FilterUserDto } from './dto/filter-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -100,11 +101,12 @@ export class UserController {
   @Get('all/paginated')
   async getUsersPaginated(
     @Query() page: PageDto,
+    @Body() filterUserDto: FilterUserDto,
     @Request() req: RequestExpress
   ): Promise<UserPaginatedDto<GetUserExposeDto>> {
     this.logger.log(`getUsersPaginated: Request made to ${req.url}`);
     this.logger.log(`Data sent: ${JSON.stringify(page)}`);
-    const usersPaginated = await this.userService.getAllPaginated(page);
+    const usersPaginated = await this.userService.getAllPaginated(page, filterUserDto);
     return plainToInstance(UserPaginatedDto<GetUserExposeDto>, usersPaginated);
   }
 }
