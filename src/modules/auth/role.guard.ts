@@ -16,7 +16,7 @@ export class RoleGuard implements CanActivate {
 
   private roles: RoleEnum[];
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  public async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest() as Request;
     const userRoles = request.user.roles.filter((role: Role) => {
       return this.roles.includes(role.name);

@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-// import { PageDto } from '@/dto/page.dto';
+import { PageDto } from '@/dto/page.dto';
 import { Prisma, UserCharacter } from '@prisma/client';
 import { PrismaService } from '@/database/prisma.service';
-// import { UserPaginatedDto } from './dto/user.paginated.dto';
+import { UserCharacterPaginatedDto } from './dto/user-character.paginated.dto';
 
 @Injectable()
 export class UserCharacterRepository {
   constructor(private prisma: PrismaService) {}
 
-  async findByName(name: string) {
+  public async findByName(name: string) {
     return this.prisma.userCharacter.findFirst({
       where: {
         name: {
@@ -27,11 +27,11 @@ export class UserCharacterRepository {
     });
   }
 
-  public async get(where: Prisma.UserCharacterWhereUniqueInput): Promise<UserCharacter | null> {
+  public async find(where: Prisma.UserCharacterWhereUniqueInput): Promise<UserCharacter | null> {
     return this.prisma.userCharacter.findUnique({ where });
   }
 
-  public async updateUser(params: {
+  public async update(params: {
     where: Prisma.UserCharacterWhereUniqueInput;
     data: Prisma.UserCharacterUpdateInput;
   }): Promise<UserCharacter> {
@@ -39,28 +39,40 @@ export class UserCharacterRepository {
     return this.prisma.userCharacter.update({ where, data });
   }
 
-  // public async findAllPaginated(page: PageDto): Promise<UserPaginatedDto<UserCharacter[]>> {
-  //   const { page: currentPage, pageSize } = page;
-  //   const offset = (currentPage - 1) * pageSize;
-  //   const take = pageSize;
-  //   const [totalCount, userCharacters] = await Promise.all([
-  //     this.prisma.userCharacter.count(),
-  //     this.prisma.userCharacter.findMany({
-  //       skip: offset,
-  //       take,
-  //       orderBy: { id: 'desc' },
-  //     }),
-  //   ]);
-  //   const totalPages = Math.ceil(totalCount / pageSize);
-  //   const hasNextPage = currentPage < totalPages;
-  //   return {
-  //     results: userCharacters,
-  //     pagination: {
-  //       totalCount,
-  //       totalPages,
-  //       currentPage,
-  //       hasNextPage,
-  //     },
-  //   };
-  // }
+  public async findAllPaginated(params: {
+    page: PageDto;
+    name?: string;
+  }): Promise<UserCharacterPaginatedDto<UserCharacter[]>> {
+    const { page, name } = params;
+    const { page: currentPage, pageSize } = page;
+    const offset = (currentPage - 1) * pageSize;
+    const take = pageSize;
+    const where: Prisma.UserCharacterWhereInput = {};
+    if (name) {
+      where.name = {
+        contains: name,
+        mode: 'insensitive',
+      };
+    }
+    const [totalCount, userCharacters] = await Promise.all([
+      this.prisma.userCharacter.count({ where }),
+      this.prisma.userCharacter.findMany({
+        skip: offset,
+        take,
+        where,
+        orderBy: { id: 'desc' },
+      }),
+    ]);
+    const totalPages = Math.ceil(totalCount / pageSize);
+    const hasNextPage = currentPage < totalPages;
+    return {
+      results: userCharacters,
+      pagination: {
+        totalCount,
+        totalPages,
+        currentPage,
+        hasNextPage,
+      },
+    };
+  }
 }

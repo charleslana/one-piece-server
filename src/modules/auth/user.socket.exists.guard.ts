@@ -15,7 +15,7 @@ export class UserSocketExistsGuard implements CanActivate {
     private readonly socketRoomService: SocketRoomService
   ) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  public async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const userId = request.user.sub;
     if (

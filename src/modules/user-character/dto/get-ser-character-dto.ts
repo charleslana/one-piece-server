@@ -78,4 +78,58 @@ export class GetUserCharacterExposeDto {
 
   @Expose()
   name: string;
+
+  @Expose()
+  faction: FactionEnum | null;
+
+  @Expose()
+  sea: SeaEnum | null;
+
+  @Expose()
+  breed: BreedEnum | null;
+
+  @Expose()
+  class: CharacterClassEnum | null;
+
+  @Expose()
+  level: number;
+
+  @Expose()
+  coin: number;
+
+  @Expose()
+  exp: number;
+
+  @Expose()
+  strength: number;
+
+  @Expose()
+  defense: number;
+
+  @Expose()
+  agility: number;
+
+  @Expose()
+  vitality: number;
+
+  @Expose()
+  energy: number;
+
+  @Expose()
+  stamina: number;
+
+  @Expose()
+  victoryPve: number;
+
+  @Expose()
+  defeatPve: number;
+
+  @Expose()
+  victoryPvp: number;
+
+  @Expose()
+  defeatPvp: number;
+
+  @Expose()
+  createdAt: Date;
 }

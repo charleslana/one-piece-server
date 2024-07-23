@@ -11,7 +11,7 @@ import { UserRepository } from './user.repository';
 export class UserService {
   constructor(private repository: UserRepository) {}
 
-  async create(dto: CreateUserDto) {
+  public async create(dto: CreateUserDto) {
     const exists = await this.repository.findByEmail(dto.email);
     if (exists) {
       throw new BusinessRuleException('O e-mail do usuário já existe');
@@ -23,7 +23,7 @@ export class UserService {
     return user;
   }
 
-  async get(id: number) {
+  public async get(id: number) {
     const find = await this.repository.find({ id });
     if (!find) {
       throw new BusinessRuleException('Usuário não encontrado');
@@ -31,23 +31,23 @@ export class UserService {
     return find;
   }
 
-  async getAll() {
+  public async getAll() {
     const findAll = await this.repository.findAll({});
     return findAll;
   }
 
-  async getAllPaginated(page: PageDto, dto?: FilterUserDto) {
+  public async getAllPaginated(page: PageDto, dto?: FilterUserDto) {
     const findAllPaginated = await this.repository.findAllPaginated({ page, email: dto.email });
     return findAllPaginated;
   }
 
-  async exclude(id: number) {
+  public async exclude(id: number) {
     await this.get(id);
     await this.repository.delete({ where: { id } });
     return new ResponseMessage('Usuário deletado com sucesso');
   }
 
-  async updateUserPassword(dto: UpdateUserPasswordDto) {
+  public async updateUserPassword(dto: UpdateUserPasswordDto) {
     const existingUser = await this.get(dto.id);
     const isPasswordValid = await dto.decryptPassword(dto.currentPassword, existingUser.password);
     if (!isPasswordValid) {
@@ -65,7 +65,7 @@ export class UserService {
     return user;
   }
 
-  async getUserByEmail(email: string) {
+  public async getUserByEmail(email: string) {
     const user = await this.repository.findByEmail(email);
     return user;
   }

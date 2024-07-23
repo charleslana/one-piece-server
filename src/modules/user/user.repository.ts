@@ -8,7 +8,7 @@ import { UserPaginatedDto } from './dto/user.paginated.dto';
 export class UserRepository {
   constructor(private prisma: PrismaService) {}
 
-  async save(params: { data: Prisma.UserCreateInput }): Promise<User> {
+  public async save(params: { data: Prisma.UserCreateInput }): Promise<User> {
     const { data } = params;
     return this.prisma.user.create({
       data: {

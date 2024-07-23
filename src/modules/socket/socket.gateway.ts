@@ -22,7 +22,7 @@ export class SocketGateway implements OnGatewayConnection {
   @WebSocketServer()
   private server: Server;
 
-  handleConnection(socket: Socket): void {
+  public handleConnection(socket: Socket): void {
     this.socketService.handleConnection(socket, this.server);
   }
 }

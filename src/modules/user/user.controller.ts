@@ -35,7 +35,7 @@ export class UserController {
   private readonly logger = new Logger(UserController.name);
 
   @Post()
-  async createUser(@Body() createUserDto: CreateUserDto, @Request() req: RequestExpress) {
+  public async createUser(@Body() createUserDto: CreateUserDto, @Request() req: RequestExpress) {
     this.logger.log(`createUser: Request made to ${req.url}`);
     this.logger.log(`Data sent: ${JSON.stringify(createUserDto.email)}`);
     const user = await this.userService.create(createUserDto);
@@ -44,7 +44,7 @@ export class UserController {
 
   @UseGuards(AuthGuard, new RoleGuard([RoleEnum.admin]))
   @Get(':id')
-  async getUser(@Param() params: FindOneParams, @Request() req: RequestExpress) {
+  public async getUser(@Param() params: FindOneParams, @Request() req: RequestExpress) {
     this.logger.log(`getUser: Request made to ${req.url}`);
     this.logger.log(`Data sent: ${JSON.stringify(params)}`);
     const { id } = params;
@@ -54,7 +54,7 @@ export class UserController {
 
   @UseGuards(AuthGuard, new RoleGuard([RoleEnum.admin]))
   @Get()
-  async getUsers(@Request() req: RequestExpress): Promise<GetUserDto[]> {
+  public async getUsers(@Request() req: RequestExpress): Promise<GetUserDto[]> {
     this.logger.log(`getUsers: Request made to ${req.url}`);
     const users = await this.userService.getAll();
     return plainToInstance(GetUserDto, users);
@@ -62,7 +62,7 @@ export class UserController {
 
   @UseGuards(AuthGuard, new RoleGuard([RoleEnum.admin]))
   @Delete(':id')
-  async deleteUser(
+  public async deleteUser(
     @Param() params: FindOneParams,
     @Res() res: Response,
     @Request() req: RequestExpress
@@ -76,7 +76,7 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @Put('change-password')
-  async updateUserPassword(
+  public async updateUserPassword(
     @Body() updateUserPasswordDto: UpdateUserPasswordDto,
     @Request() req: RequestExpress
   ) {
@@ -89,7 +89,7 @@ export class UserController {
 
   @UseGuards(AuthGuard, UserSocketExistsGuard)
   @Get('profile/me')
-  async getMe(@Request() req: RequestExpress) {
+  public async getMe(@Request() req: RequestExpress) {
     this.logger.log(`getMe: Request made to ${req.url}`);
     this.logger.log(`Data sent: ${JSON.stringify(req.user.sub)}`);
     const userId = req.user.sub;
@@ -99,7 +99,7 @@ export class UserController {
 
   @UseGuards(AuthGuard, new RoleGuard([RoleEnum.admin]))
   @Get('all/paginated')
-  async getUsersPaginated(
+  public async getUsersPaginated(
     @Query() page: PageDto,
     @Body() filterUserDto: FilterUserDto,
     @Request() req: RequestExpress

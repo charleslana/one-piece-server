@@ -23,7 +23,7 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async signIn(dto: AuthDto): Promise<{ access_token: string }> {
+  public async signIn(dto: AuthDto): Promise<{ access_token: string }> {
     const user = await this.userService.getUserByEmail(dto.email);
     const isPasswordValid = await dto.decryptPassword(dto.password, user?.password || '');
     if (!isPasswordValid) {

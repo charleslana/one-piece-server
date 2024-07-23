@@ -5,11 +5,11 @@ import { MessageInterface } from './interface/message.interface';
 export class SocketMessageService {
   private messages: MessageInterface[] = [];
 
-  addMessage(message: MessageInterface): void {
+  public addMessage(message: MessageInterface): void {
     this.messages.push(message);
   }
 
-  getLastMessage(): MessageInterface | undefined {
+  public getLastMessage(): MessageInterface | undefined {
     return this.messages[this.messages.length - 1];
   }
 }

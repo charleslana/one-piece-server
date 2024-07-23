@@ -12,7 +12,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  async signIn(@Body() authDto: AuthDto, @Request() req: RequestExpress) {
+  public async signIn(@Body() authDto: AuthDto, @Request() req: RequestExpress) {
     this.logger.log(`signIn: Request made to ${req.url}`);
     this.logger.log(`Data sent: ${JSON.stringify(authDto.email)}`);
     const auth = await this.authService.signIn(authDto);

@@ -16,7 +16,7 @@ export class SocketService {
 
   private readonly logger = new Logger(SocketService.name);
 
-  handleConnection(socket: Socket, server: Server): void {
+  public handleConnection(socket: Socket, server: Server): void {
     this.handleConnect(socket);
     this.handleDisconnect(socket, server);
     this.handleGetAllUsers(socket, server);
