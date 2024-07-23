@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PageDto } from '@/dto/page.dto';
-import { Prisma, User } from '@prisma/client';
+import { Prisma, User, UserCharacter } from '@prisma/client';
 import { PrismaService } from '@/database/prisma.service';
 import { UserPaginatedDto } from './dto/user.paginated.dto';
 
@@ -8,19 +8,22 @@ import { UserPaginatedDto } from './dto/user.paginated.dto';
 export class UserRepository {
   constructor(private prisma: PrismaService) {}
 
-  async createUser(params: { data: Prisma.UserCreateInput }): Promise<User> {
+  public async save(params: { data: Prisma.UserCreateInput }): Promise<User> {
     const { data } = params;
-    return this.prisma.user.create({
+    const user = await this.createUserAndRole(data);
+    const userCharacter = await this.createUserCharacter(user.id);
+    await this.update({
+      where: { id: user.id },
       data: {
-        ...data,
-        roles: {
-          create: {},
+        userCharacter: {
+          connect: { id: userCharacter.id },
         },
       },
     });
+    return user;
   }
 
-  async findByEmail(email: string) {
+  public async findByEmail(email: string) {
     return this.prisma.user.findFirst({
       where: {
         email: {
@@ -34,7 +37,7 @@ export class UserRepository {
     });
   }
 
-  async findById(id: number): Promise<User | null> {
+  public async findById(id: number): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: {
         id,
@@ -42,22 +45,16 @@ export class UserRepository {
     });
   }
 
-  async findByName(name: string): Promise<User | null> {
-    return this.prisma.user.findFirst({
-      where: {
-        name: {
-          contains: name,
-          mode: 'insensitive',
-        },
+  public async find(where: Prisma.UserWhereUniqueInput): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where,
+      include: {
+        userCharacter: true,
       },
     });
   }
 
-  async getUser(where: Prisma.UserWhereUniqueInput): Promise<User | null> {
-    return this.prisma.user.findUnique({ where });
-  }
-
-  async getUsers(params: {
+  public async findAll(params: {
     skip?: number;
     take?: number;
     cursor?: Prisma.UserWhereUniqueInput;
@@ -68,7 +65,7 @@ export class UserRepository {
     return this.prisma.user.findMany({ skip, take, cursor, where, orderBy });
   }
 
-  async updateUser(params: {
+  public async update(params: {
     where: Prisma.UserWhereUniqueInput;
     data: Prisma.UserUpdateInput;
   }): Promise<User> {
@@ -76,12 +73,12 @@ export class UserRepository {
     return this.prisma.user.update({ where, data });
   }
 
-  async deleteUser(params: { where: Prisma.UserWhereUniqueInput }): Promise<User> {
+  public async delete(params: { where: Prisma.UserWhereUniqueInput }): Promise<User> {
     const { where } = params;
     return this.prisma.user.delete({ where });
   }
 
-  async findAllPaginated(page: PageDto): Promise<UserPaginatedDto<User[]>> {
+  public async findAllPaginated(page: PageDto): Promise<UserPaginatedDto<User[]>> {
     const { page: currentPage, pageSize } = page;
     const offset = (currentPage - 1) * pageSize;
     const take = pageSize;
@@ -104,5 +101,29 @@ export class UserRepository {
         hasNextPage,
       },
     };
+  }
+
+  private async createUserAndRole(data: Prisma.UserCreateInput): Promise<User> {
+    return this.prisma.user.create({
+      data: {
+        ...data,
+        roles: {
+          create: {},
+        },
+      },
+    });
+  }
+
+  private async createUserCharacter(userId: number): Promise<UserCharacter> {
+    return this.prisma.userCharacter.create({
+      data: {
+        userId: userId,
+        avatars: {
+          createMany: {
+            data: Array.from({ length: 5 }, (_, i) => ({ image: `${i + 1}` })),
+          },
+        },
+      },
+    });
   }
 }

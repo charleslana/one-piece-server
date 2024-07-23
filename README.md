@@ -41,7 +41,7 @@ nest g module modules/user
 ```
 
 ```
-npx nest generate module modules/socket
+npx nest generate module modules/socket --skip-tests
 ```
 
 ## Running the app

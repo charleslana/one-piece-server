@@ -4,11 +4,11 @@ import { FindOneParams } from '../find-one.params';
 import { GetUserDto, GetUserExposeDto } from './dto/get-user.dto';
 import { PageDto } from '@/dto/page.dto';
 import { plainToInstance } from 'class-transformer';
-import { Request as ERequest } from 'express';
+import { Request as RequestExpress } from 'express';
 import { Response } from 'express';
 import { RoleEnum } from '@prisma/client';
 import { RoleGuard } from '../auth/role.guard';
-import { UpdateUserDto, UpdateUserPasswordDto } from './dto/update-user.dto';
+import { UpdateUserPasswordDto } from './dto/update-user.dto';
 import { UserPaginatedDto } from './dto/user.paginated.dto';
 import { UserService } from './user.service';
 import { UserSocketExistsGuard } from '../auth/user.socket.exists.guard';
@@ -34,49 +34,42 @@ export class UserController {
   private readonly logger = new Logger(UserController.name);
 
   @Post()
-  async createUser(@Body() createUserDto: CreateUserDto, @Request() req: ERequest) {
+  async createUser(@Body() createUserDto: CreateUserDto, @Request() req: RequestExpress) {
     this.logger.log(`createUser: Request made to ${req.url}`);
     this.logger.log(`Data sent: ${JSON.stringify(createUserDto.email)}`);
-    const user = await this.userService.createUser(createUserDto);
+    const user = await this.userService.create(createUserDto);
     return plainToInstance(GetUserDto, user);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, new RoleGuard([RoleEnum.admin]))
   @Get(':id')
-  async findOne(@Param() params: FindOneParams, @Request() req: ERequest) {
-    this.logger.log(`findOne: Request made to ${req.url}`);
+  async getUser(@Param() params: FindOneParams, @Request() req: RequestExpress) {
+    this.logger.log(`getUser: Request made to ${req.url}`);
     this.logger.log(`Data sent: ${JSON.stringify(params)}`);
     const { id } = params;
-    const user = await this.userService.getUser(id);
+    const user = await this.userService.get(id);
     return plainToInstance(GetUserExposeDto, user);
   }
 
   @UseGuards(AuthGuard, new RoleGuard([RoleEnum.admin]))
   @Get()
-  async getUsers(@Request() req: ERequest): Promise<GetUserDto[]> {
+  async getUsers(@Request() req: RequestExpress): Promise<GetUserDto[]> {
     this.logger.log(`getUsers: Request made to ${req.url}`);
-    const users = await this.userService.getUsers();
+    const users = await this.userService.getAll();
     return plainToInstance(GetUserDto, users);
-  }
-
-  @UseGuards(AuthGuard)
-  @Put()
-  async updateUser(@Body() updateUserDto: UpdateUserDto, @Request() req: ERequest) {
-    this.logger.log(`updateUser: Request made to ${req.url}`);
-    this.logger.log(`Data sent: ${JSON.stringify(updateUserDto)}`);
-    this.logger.log(`Data sent: ${JSON.stringify(req.user.sub)}`);
-    updateUserDto.id = req.user.sub;
-    const user = await this.userService.updateUser(updateUserDto);
-    return plainToInstance(GetUserDto, user);
   }
 
   @UseGuards(AuthGuard, new RoleGuard([RoleEnum.admin]))
   @Delete(':id')
-  async deleteUser(@Param() params: FindOneParams, @Res() res: Response, @Request() req: ERequest) {
+  async deleteUser(
+    @Param() params: FindOneParams,
+    @Res() res: Response,
+    @Request() req: RequestExpress
+  ) {
     this.logger.log(`deleteUser: Request made to ${req.url}`);
     this.logger.log(`Data sent: ${JSON.stringify(params)}`);
     const { id } = params;
-    const response = await this.userService.deleteUser(id);
+    const response = await this.userService.exclude(id);
     return res.status(response.statusCode).json(response.toJson());
   }
 
@@ -84,7 +77,7 @@ export class UserController {
   @Put('change-password')
   async updateUserPassword(
     @Body() updateUserPasswordDto: UpdateUserPasswordDto,
-    @Request() req: ERequest
+    @Request() req: RequestExpress
   ) {
     this.logger.log(`updateUserPassword: Request made to ${req.url}`);
     this.logger.log(`Data sent: ${JSON.stringify(req.user.sub)}`);
@@ -95,23 +88,23 @@ export class UserController {
 
   @UseGuards(AuthGuard, UserSocketExistsGuard)
   @Get('profile/me')
-  async getMe(@Request() req: ERequest) {
+  async getMe(@Request() req: RequestExpress) {
     this.logger.log(`getMe: Request made to ${req.url}`);
     this.logger.log(`Data sent: ${JSON.stringify(req.user.sub)}`);
     const userId = req.user.sub;
-    const user = await this.userService.getUser(userId);
+    const user = await this.userService.get(userId);
     return plainToInstance(GetUserDto, user);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, new RoleGuard([RoleEnum.admin]))
   @Get('all/paginated')
   async getUsersPaginated(
     @Query() page: PageDto,
-    @Request() req: ERequest
+    @Request() req: RequestExpress
   ): Promise<UserPaginatedDto<GetUserExposeDto>> {
     this.logger.log(`getUsersPaginated: Request made to ${req.url}`);
     this.logger.log(`Data sent: ${JSON.stringify(page)}`);
-    const usersPaginated = await this.userService.getUsersPaginated(page);
+    const usersPaginated = await this.userService.getAllPaginated(page);
     return plainToInstance(UserPaginatedDto<GetUserExposeDto>, usersPaginated);
   }
 }

@@ -9,6 +9,7 @@ import { UserController } from './modules/user/user.controller';
 import { UserModule } from './modules/user/user.module';
 import { ValidationInterceptor } from './helpers/interceptor/ValidationInterceptor';
 import { CronjobService } from './modules/cronjob/cronjob.service';
+import { UserCharacterModule } from './modules/user-character/user-character.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { CronjobService } from './modules/cronjob/cronjob.service';
       },
     ]),
     SocketModule,
+    UserCharacterModule,
   ],
   controllers: [AppController, UserController],
   providers: [

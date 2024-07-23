@@ -3,74 +3,57 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { Injectable } from '@nestjs/common';
 import { PageDto } from '@/dto/page.dto';
 import { ResponseMessage } from '@/helpers/ResponseMessage';
-import { UpdateUserDto, UpdateUserPasswordDto } from './dto/update-user.dto';
+import { UpdateUserPasswordDto } from './dto/update-user.dto';
 import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
   constructor(private repository: UserRepository) {}
 
-  async createUser(dto: CreateUserDto) {
-    const existingUser = await this.repository.findByEmail(dto.email);
-    if (existingUser) {
+  async create(dto: CreateUserDto) {
+    const exists = await this.repository.findByEmail(dto.email);
+    if (exists) {
       throw new BusinessRuleException('O e-mail do usuário já existe');
     }
     dto.password = await dto.hashPassword(dto.password);
-    const user = await this.repository.createUser({
+    const user = await this.repository.save({
       data: dto,
     });
     return user;
   }
 
-  async getUser(id: number) {
-    const user = await this.repository.getUser({ id });
-    if (!user) {
+  async get(id: number) {
+    const find = await this.repository.find({ id });
+    if (!find) {
       throw new BusinessRuleException('Usuário não encontrado');
     }
-    return user;
+    return find;
   }
 
-  async getUsers() {
-    const users = await this.repository.getUsers({});
-    return users;
+  async getAll() {
+    const findAll = await this.repository.findAll({});
+    return findAll;
   }
 
-  async getUsersPaginated(page: PageDto) {
-    const usersPaginated = await this.repository.findAllPaginated(page);
-    return usersPaginated;
+  async getAllPaginated(page: PageDto) {
+    const findAllPaginated = await this.repository.findAllPaginated(page);
+    return findAllPaginated;
   }
 
-  async updateUser(dto: UpdateUserDto) {
-    const existingUser = await this.getUser(dto.id);
-    if (dto.name) {
-      const existingUserWithName = await this.repository.findByName(dto.name);
-      if (existingUserWithName && existingUserWithName.id !== existingUser.id) {
-        throw new BusinessRuleException('Nome do usuário já existe');
-      }
-    }
-    const user = await this.repository.updateUser({
-      data: dto,
-      where: {
-        id: dto.id,
-      },
-    });
-    return user;
-  }
-
-  async deleteUser(id: number) {
-    await this.getUser(id);
-    await this.repository.deleteUser({ where: { id } });
+  async exclude(id: number) {
+    await this.get(id);
+    await this.repository.delete({ where: { id } });
     return new ResponseMessage('Usuário deletado com sucesso');
   }
 
   async updateUserPassword(dto: UpdateUserPasswordDto) {
-    const existingUser = await this.getUser(dto.id);
+    const existingUser = await this.get(dto.id);
     const isPasswordValid = await dto.decryptPassword(dto.currentPassword, existingUser.password);
     if (!isPasswordValid) {
       throw new BusinessRuleException('Senha do usuário atual inválida');
     }
     const password = await dto.hashPassword(dto.newPassword);
-    const user = await this.repository.updateUser({
+    const user = await this.repository.update({
       data: {
         password,
       },

@@ -1,4 +1,6 @@
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
+import { GetUserCharacterDto } from '@/modules/user-character/dto/get-ser-character-dto';
+import { UserCharacter } from '@prisma/client';
 
 export class GetUserDto {
   @Expose()
@@ -8,13 +10,14 @@ export class GetUserDto {
   email: string;
 
   @Expose()
-  name: string | null;
-
-  @Expose()
   createdAt: Date;
 
   @Expose()
   updatedAt: Date;
+
+  @Expose()
+  @Type(() => GetUserCharacterDto)
+  userCharacter: UserCharacter;
 }
 
 export class GetUserExposeDto {
@@ -22,5 +25,11 @@ export class GetUserExposeDto {
   id: number;
 
   @Expose()
-  name: string | null;
+  email: string;
+
+  @Expose()
+  bannedTime: Date | null;
+
+  @Expose()
+  userCharacterId: number;
 }

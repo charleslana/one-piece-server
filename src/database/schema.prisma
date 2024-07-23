@@ -12,15 +12,43 @@ enum RoleEnum {
   user
 }
 
+enum FactionEnum {
+  pirate
+  marine
+  revolutionary
+}
+
+enum SeaEnum {
+  north_blue @map("north-blue")
+  east_blue  @map("east-blue")
+  south_blue @map("south-blue")
+  west_blue  @map("west-blue")
+}
+
+enum BreedEnum {
+  human
+  dwarf
+  giant
+  merman
+  cyborg
+}
+
+enum CharacterClassEnum {
+  swordsman
+  shooter
+  fighter
+}
+
 model User {
-  id         Int       @id @default(autoincrement())
-  email      String    @unique @db.VarChar(255)
-  password   String
-  name       String?   @unique @db.VarChar(20)
-  bannedTime DateTime? @map("banned_time")
-  createdAt  DateTime  @default(now()) @map("created_at")
-  updatedAt  DateTime  @default(now()) @updatedAt @map("updated_at")
-  roles      Role[]
+  id              Int            @id @default(autoincrement())
+  email           String         @unique @db.VarChar(255)
+  password        String
+  bannedTime      DateTime?      @map("banned_time")
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @default(now()) @updatedAt @map("updated_at")
+  roles           Role[]
+  userCharacter   UserCharacter?
+  userCharacterId Int?           @map("user_character_id")
 
   @@map(name: "tb_user")
 }
@@ -34,4 +62,46 @@ model Role {
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
   @@map(name: "tb_user_role")
+}
+
+model UserCharacter {
+  id             Int                 @id @default(autoincrement())
+  name           String?             @unique @db.VarChar(20)
+  faction        FactionEnum?
+  sea            SeaEnum?
+  breed          BreedEnum?
+  class          CharacterClassEnum?
+  level          Int                 @default(1)
+  coin           Int                 @default(5000)
+  gold           Int                 @default(0)
+  exp            Int                 @default(0)
+  strength       Int                 @default(1)
+  defense        Int                 @default(1)
+  agility        Int                 @default(1)
+  vitality       Int                 @default(1)
+  energy         Int                 @default(1)
+  stamina        Int                 @default(100)
+  attributePoint Int                 @default(5) @map("attribute_point")
+  victoryPve     Int                 @default(0) @map("victory_pve")
+  defeatPve      Int                 @default(0) @map("defeat_pve")
+  victoryPvp     Int                 @default(0) @map("victory_pvp")
+  defeatPvp      Int                 @default(0) @map("defeat_pvp")
+  userId         Int                 @unique @map("user_id")
+  createdAt      DateTime            @default(now()) @map("created_at")
+  updatedAt      DateTime            @default(now()) @updatedAt @map("updated_at")
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  avatars        Avatar[]
+
+  @@map(name: "tb_user_character")
+}
+
+model Avatar {
+  id              Int           @id @default(autoincrement())
+  image           String        @db.VarChar(255)
+  userCharacter   UserCharacter @relation(fields: [userCharacterId], references: [id], onDelete: Cascade)
+  userCharacterId Int           @map("user_character_id")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @default(now()) @updatedAt @map("updated_at")
+
+  @@map(name: "tb_avatar")
 }
