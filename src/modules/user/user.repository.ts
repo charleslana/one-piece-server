@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PageDto } from '@/dto/page.dto';
-import { Prisma, User, UserCharacter } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import { PrismaService } from '@/database/prisma.service';
 import { UserPaginatedDto } from './dto/user.paginated.dto';
 
@@ -8,19 +8,25 @@ import { UserPaginatedDto } from './dto/user.paginated.dto';
 export class UserRepository {
   constructor(private prisma: PrismaService) {}
 
-  public async save(params: { data: Prisma.UserCreateInput }): Promise<User> {
+  async save(params: { data: Prisma.UserCreateInput }): Promise<User> {
     const { data } = params;
-    const user = await this.createUserAndRole(data);
-    const userCharacter = await this.createUserCharacter(user.id);
-    await this.update({
-      where: { id: user.id },
+    return this.prisma.user.create({
       data: {
+        ...data,
+        roles: {
+          create: {},
+        },
         userCharacter: {
-          connect: { id: userCharacter.id },
+          create: {
+            avatars: {
+              createMany: {
+                data: Array.from({ length: 5 }, (_, i) => ({ image: `${i + 1}` })),
+              },
+            },
+          },
         },
       },
     });
-    return user;
   }
 
   public async findByEmail(email: string) {
@@ -101,29 +107,5 @@ export class UserRepository {
         hasNextPage,
       },
     };
-  }
-
-  private async createUserAndRole(data: Prisma.UserCreateInput): Promise<User> {
-    return this.prisma.user.create({
-      data: {
-        ...data,
-        roles: {
-          create: {},
-        },
-      },
-    });
-  }
-
-  private async createUserCharacter(userId: number): Promise<UserCharacter> {
-    return this.prisma.userCharacter.create({
-      data: {
-        userId: userId,
-        avatars: {
-          createMany: {
-            data: Array.from({ length: 5 }, (_, i) => ({ image: `${i + 1}` })),
-          },
-        },
-      },
-    });
   }
 }
