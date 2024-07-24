@@ -64,7 +64,7 @@ export class UserCharacterController {
     this.logger.log(`updateUserCharacter: Request made to ${req.url}`);
     this.logger.log(`Data sent: ${JSON.stringify(updateUserCharacterDto)}`);
     this.logger.log(`Data sent: ${JSON.stringify(req.user.sub)}`);
-    updateUserCharacterDto.id = req.user.sub;
+    updateUserCharacterDto.userId = req.user.sub;
     const user = await this.userCharacterService.updateUserCharacter(updateUserCharacterDto);
     return plainToInstance(GetUserCharacterDto, user);
   }

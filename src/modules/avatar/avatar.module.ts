@@ -1,14 +1,13 @@
 import { AvatarController } from './avatar.controller';
 import { AvatarRepository } from './avatar.repository';
 import { AvatarService } from './avatar.service';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { PrismaModule } from '@/database/prisma.module';
-import { UserCharacterRepository } from '../user-character/user-character.repository';
-import { UserCharacterService } from '../user-character/user-character.service';
+import { UserCharacterModule } from '../user-character/user-character.module';
 
 @Module({
-  imports: [PrismaModule],
-  providers: [AvatarService, AvatarRepository, UserCharacterService, UserCharacterRepository],
+  imports: [PrismaModule, forwardRef(() => UserCharacterModule)],
+  providers: [AvatarService, AvatarRepository],
   controllers: [AvatarController],
   exports: [AvatarService],
 })

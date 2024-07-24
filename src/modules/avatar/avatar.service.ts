@@ -1,13 +1,14 @@
 import { AvatarRepository } from './avatar.repository';
 import { BusinessRuleException } from '@/helpers/error/BusinessRuleException';
 import { CreateAvatarDto } from './dto/create-avatar.dto';
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { UserCharacterService } from '../user-character/user-character.service';
 
 @Injectable()
 export class AvatarService {
   constructor(
     private repository: AvatarRepository,
+    @Inject(forwardRef(() => UserCharacterService))
     private userCharacterService: UserCharacterService
   ) {}
 
@@ -46,5 +47,22 @@ export class AvatarService {
     const userCharacter = await this.userCharacterService.get(userId);
     const findAll = await this.repository.findAll({ where: { userCharacterId: userCharacter.id } });
     return findAll;
+  }
+
+  public async updateAvatar(avatarId: number, userId: number) {
+    await this.get(avatarId, userId);
+    const avatars = await this.getAll(userId);
+    const currentSelectedAvatar = avatars.find((avatar) => avatar.selected);
+    if (currentSelectedAvatar && currentSelectedAvatar.id !== avatarId) {
+      await this.repository.update({
+        where: { id: currentSelectedAvatar.id },
+        data: { selected: false },
+      });
+    }
+    const updatedAvatar = await this.repository.update({
+      data: { selected: true },
+      where: { id: avatarId },
+    });
+    return updatedAvatar;
   }
 }

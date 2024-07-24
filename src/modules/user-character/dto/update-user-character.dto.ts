@@ -1,6 +1,15 @@
 import { BreedEnum, CharacterClassEnum, FactionEnum, SeaEnum } from '@prisma/client';
-import { Exclude } from 'class-transformer';
-import { IsEnum, IsNotEmpty, Matches, MaxLength, MinLength } from 'class-validator';
+import { Exclude, Transform } from 'class-transformer';
+import {
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  Matches,
+  MaxLength,
+  Min,
+  MinLength,
+} from 'class-validator';
 
 export class UpdateUserCharacterDto {
   @IsNotEmpty()
@@ -28,6 +37,12 @@ export class UpdateUserCharacterDto {
   @IsEnum(CharacterClassEnum)
   class: CharacterClassEnum;
 
+  @IsNumber()
+  @Min(1)
+  @IsInt()
+  @Transform(({ value }) => parseInt(value))
+  avatarId: number;
+
   @Exclude()
-  id: number;
+  userId: number;
 }

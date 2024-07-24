@@ -8,6 +8,9 @@ export class GetAvatarDto {
   image: string;
 
   @Expose()
+  selected: boolean;
+
+  @Expose()
   createdAt: Date;
 
   @Expose()
