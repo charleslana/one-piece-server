@@ -96,7 +96,7 @@ export class UserService {
         faction: dto.faction,
         breed: dto.breed,
         sea: dto.sea,
-        characterClass: dto.class,
+        characterClass: dto.characterClass,
       },
       where: {
         id: dto.userId,

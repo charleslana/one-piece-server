@@ -25,7 +25,7 @@ export class GetUserDto {
   breed: BreedEnum | null;
 
   @Expose()
-  class: CharacterClassEnum | null;
+  characterClass: CharacterClassEnum | null;
 
   @Expose()
   level: number;
@@ -82,7 +82,7 @@ export class GetUserExposeDto {
   breed: BreedEnum | null;
 
   @Expose()
-  class: CharacterClassEnum | null;
+  characterClass: CharacterClassEnum | null;
 
   @Expose()
   level: number;

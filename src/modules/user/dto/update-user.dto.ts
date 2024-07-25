@@ -49,7 +49,7 @@ export class UpdateUserDto {
 
   @IsNotEmpty()
   @IsEnum(CharacterClassEnum)
-  class: CharacterClassEnum;
+  characterClass: CharacterClassEnum;
 
   @IsNumber()
   @Min(1)
