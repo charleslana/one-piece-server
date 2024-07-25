@@ -13,16 +13,15 @@ export class UserRepository {
     return this.prisma.user.create({
       data: {
         ...data,
+        attribute: {
+          create: {},
+        },
         roles: {
           create: {},
         },
-        userCharacter: {
-          create: {
-            avatars: {
-              createMany: {
-                data: Array.from({ length: 5 }, (_, i) => ({ image: `${i + 1}` })),
-              },
-            },
+        avatars: {
+          createMany: {
+            data: Array.from({ length: 5 }, (_, i) => ({ image: `${i + 1}` })),
           },
         },
       },
@@ -43,6 +42,17 @@ export class UserRepository {
     });
   }
 
+  public async findByName(name: string) {
+    return this.prisma.user.findFirst({
+      where: {
+        name: {
+          contains: name,
+          mode: 'insensitive',
+        },
+      },
+    });
+  }
+
   public async findById(id: number): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: {
@@ -55,7 +65,7 @@ export class UserRepository {
     return this.prisma.user.findUnique({
       where,
       include: {
-        userCharacter: true,
+        attribute: true,
       },
     });
   }
@@ -84,18 +94,18 @@ export class UserRepository {
     return this.prisma.user.delete({ where });
   }
 
-  public async findAllPaginated(params: {
+  public async findAllPaginatedAndFilter(params: {
     page: PageDto;
-    email?: string;
+    name?: string;
   }): Promise<UserPaginatedDto<User[]>> {
-    const { page, email } = params;
+    const { page, name } = params;
     const { page: currentPage, pageSize } = page;
     const offset = (currentPage - 1) * pageSize;
     const take = pageSize;
     const where: Prisma.UserWhereInput = {};
-    if (email) {
-      where.email = {
-        contains: email,
+    if (name) {
+      where.name = {
+        contains: name,
         mode: 'insensitive',
       };
     }

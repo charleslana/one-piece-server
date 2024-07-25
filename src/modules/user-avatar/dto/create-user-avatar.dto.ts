@@ -9,7 +9,7 @@ import {
   NotContains,
 } from 'class-validator';
 
-export class CreateAvatarDto {
+export class CreateUserAvatarDto {
   @IsNumber()
   @Min(1)
   @IsInt()

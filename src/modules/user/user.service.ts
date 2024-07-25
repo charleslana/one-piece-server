@@ -1,15 +1,20 @@
 import { BusinessRuleException } from '@/helpers/error/BusinessRuleException';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FilterUserDto } from './dto/filter-user.dto';
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { PageDto } from '@/dto/page.dto';
 import { ResponseMessage } from '@/helpers/ResponseMessage';
-import { UpdateUserPasswordDto } from './dto/update-user.dto';
+import { UpdateUserDto, UpdateUserPasswordDto } from './dto/update-user.dto';
+import { UserAvatarService } from '../user-avatar/user-avatar.service';
 import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
-  constructor(private repository: UserRepository) {}
+  constructor(
+    private repository: UserRepository,
+    @Inject(forwardRef(() => UserAvatarService))
+    private userAvatarService: UserAvatarService
+  ) {}
 
   public async create(dto: CreateUserDto) {
     const exists = await this.repository.findByEmail(dto.email);
@@ -36,8 +41,11 @@ export class UserService {
     return findAll;
   }
 
-  public async getAllPaginated(page: PageDto, dto?: FilterUserDto) {
-    const findAllPaginated = await this.repository.findAllPaginated({ page, email: dto.email });
+  public async getAllPaginatedAndFilter(page: PageDto, dto?: FilterUserDto) {
+    const findAllPaginated = await this.repository.findAllPaginatedAndFilter({
+      page,
+      name: dto.name,
+    });
     return findAllPaginated;
   }
 
@@ -68,5 +76,32 @@ export class UserService {
   public async getUserByEmail(email: string) {
     const user = await this.repository.findByEmail(email);
     return user;
+  }
+
+  public async updateUserCharacter(dto: UpdateUserDto) {
+    const existingUser = await this.get(dto.userId);
+    if (existingUser.name) {
+      throw new BusinessRuleException('Você já atualizou os dados do personagem');
+    }
+    if (dto.name) {
+      const existingUserWithName = await this.repository.findByName(dto.name);
+      if (existingUserWithName && existingUserWithName.id !== existingUser.id) {
+        throw new BusinessRuleException('Nome de personagem do usuário já existe');
+      }
+    }
+    await this.userAvatarService.updateAvatar(dto.avatarId, dto.userId);
+    const userCharacter = await this.repository.update({
+      data: {
+        name: dto.name,
+        faction: dto.faction,
+        breed: dto.breed,
+        sea: dto.sea,
+        characterClass: dto.class,
+      },
+      where: {
+        id: dto.userId,
+      },
+    });
+    return userCharacter;
   }
 }

@@ -2,12 +2,12 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
-import { AvatarModule } from './modules/avatar/avatar.module';
 import { CronjobService } from './modules/cronjob/cronjob.service';
 import { Module } from '@nestjs/common';
 import { SocketModule } from './modules/socket/socket.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { UserCharacterModule } from './modules/user-character/user-character.module';
+import { UserAttributeModule } from './modules/user-attribute/user-attribute.module';
+import { UserAvatarModule } from './modules/user-avatar/user-avatar.module';
 import { UserController } from './modules/user/user.controller';
 import { UserModule } from './modules/user/user.module';
 import { ValidationInterceptor } from './helpers/interceptor/ValidationInterceptor';
@@ -23,8 +23,8 @@ import { ValidationInterceptor } from './helpers/interceptor/ValidationIntercept
       },
     ]),
     SocketModule,
-    UserCharacterModule,
-    AvatarModule,
+    UserAvatarModule,
+    UserAttributeModule,
   ],
   controllers: [AppController, UserController],
   providers: [

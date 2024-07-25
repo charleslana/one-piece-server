@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 
-export class GetAvatarDto {
+export class GetUserAvatarDto {
   @Expose()
   id: number;
 

@@ -1,5 +1,6 @@
 import { AuthGuard } from '../auth/auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
+import { FilterUserDto } from './dto/filter-user.dto';
 import { FindOneParams } from '../find-one.params';
 import { GetUserDto, GetUserExposeDto } from './dto/get-user.dto';
 import { PageDto } from '@/dto/page.dto';
@@ -8,7 +9,7 @@ import { Request as RequestExpress } from 'express';
 import { Response } from 'express';
 import { RoleEnum } from '@prisma/client';
 import { RoleGuard } from '../auth/role.guard';
-import { UpdateUserPasswordDto } from './dto/update-user.dto';
+import { UpdateUserDto, UpdateUserPasswordDto } from './dto/update-user.dto';
 import { UserPaginatedDto } from './dto/user.paginated.dto';
 import { UserService } from './user.service';
 import { UserSocketExistsGuard } from '../auth/user.socket.exists.guard';
@@ -26,7 +27,6 @@ import {
   Query,
   Logger,
 } from '@nestjs/common';
-import { FilterUserDto } from './dto/filter-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -42,7 +42,7 @@ export class UserController {
     return plainToInstance(GetUserDto, user);
   }
 
-  @UseGuards(AuthGuard, new RoleGuard([RoleEnum.admin]))
+  @UseGuards(AuthGuard)
   @Get(':id')
   public async getUser(@Param() params: FindOneParams, @Request() req: RequestExpress) {
     this.logger.log(`getUser: Request made to ${req.url}`);
@@ -97,16 +97,27 @@ export class UserController {
     return plainToInstance(GetUserDto, user);
   }
 
-  @UseGuards(AuthGuard, new RoleGuard([RoleEnum.admin]))
+  @UseGuards(AuthGuard)
   @Get('all/paginated')
-  public async getUsersPaginated(
+  public async getUsersPaginatedAndFilter(
     @Query() page: PageDto,
     @Body() filterUserDto: FilterUserDto,
     @Request() req: RequestExpress
   ): Promise<UserPaginatedDto<GetUserExposeDto>> {
     this.logger.log(`getUsersPaginated: Request made to ${req.url}`);
     this.logger.log(`Data sent: ${JSON.stringify(page)}`);
-    const usersPaginated = await this.userService.getAllPaginated(page, filterUserDto);
+    const usersPaginated = await this.userService.getAllPaginatedAndFilter(page, filterUserDto);
     return plainToInstance(UserPaginatedDto<GetUserExposeDto>, usersPaginated);
+  }
+
+  @UseGuards(AuthGuard)
+  @Put()
+  async updateUser(@Body() updateUserDto: UpdateUserDto, @Request() req: RequestExpress) {
+    this.logger.log(`updateUser: Request made to ${req.url}`);
+    this.logger.log(`Data sent: ${JSON.stringify(updateUserDto)}`);
+    this.logger.log(`Data sent: ${JSON.stringify(req.user.sub)}`);
+    updateUserDto.userId = req.user.sub;
+    const user = await this.userService.updateUserCharacter(updateUserDto);
+    return plainToInstance(GetUserDto, user);
   }
 }

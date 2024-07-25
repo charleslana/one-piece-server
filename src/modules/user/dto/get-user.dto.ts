@@ -1,26 +1,8 @@
+import { BreedEnum, CharacterClassEnum, FactionEnum, SeaEnum, UserAttribute } from '@prisma/client';
 import { Expose, Type } from 'class-transformer';
-import { GetUserCharacterDto } from '@/modules/user-character/dto/get-ser-character-dto';
-import { UserCharacter } from '@prisma/client';
+import { GetUserAttributeDto } from '@/modules/user-attribute/dto/get-user-attribute.dto';
 
 export class GetUserDto {
-  @Expose()
-  id: number;
-
-  @Expose()
-  email: string;
-
-  @Expose()
-  createdAt: Date;
-
-  @Expose()
-  updatedAt: Date;
-
-  @Expose()
-  @Type(() => GetUserCharacterDto)
-  userCharacter: UserCharacter;
-}
-
-export class GetUserExposeDto {
   @Expose()
   id: number;
 
@@ -31,5 +13,104 @@ export class GetUserExposeDto {
   bannedTime: Date | null;
 
   @Expose()
-  userCharacterId: number;
+  name: string | null;
+
+  @Expose()
+  faction: FactionEnum | null;
+
+  @Expose()
+  sea: SeaEnum | null;
+
+  @Expose()
+  breed: BreedEnum | null;
+
+  @Expose()
+  class: CharacterClassEnum | null;
+
+  @Expose()
+  level: number;
+
+  @Expose()
+  coin: number;
+
+  @Expose()
+  gold: number;
+
+  @Expose()
+  exp: number;
+
+  @Expose()
+  stamina: number;
+
+  @Expose()
+  victoryPve: number;
+
+  @Expose()
+  defeatPve: number;
+
+  @Expose()
+  victoryPvp: number;
+
+  @Expose()
+  defeatPvp: number;
+
+  @Expose()
+  createdAt: Date;
+
+  @Expose()
+  updatedAt: Date;
+
+  @Expose()
+  @Type(() => GetUserAttributeDto)
+  attribute: UserAttribute;
+}
+
+export class GetUserExposeDto {
+  @Expose()
+  id: number;
+
+  @Expose()
+  name: string | null;
+
+  @Expose()
+  faction: FactionEnum | null;
+
+  @Expose()
+  sea: SeaEnum | null;
+
+  @Expose()
+  breed: BreedEnum | null;
+
+  @Expose()
+  class: CharacterClassEnum | null;
+
+  @Expose()
+  level: number;
+
+  @Expose()
+  coin: number;
+
+  @Expose()
+  exp: number;
+
+  @Expose()
+  stamina: number;
+
+  @Expose()
+  victoryPve: number;
+
+  @Expose()
+  defeatPve: number;
+
+  @Expose()
+  victoryPvp: number;
+
+  @Expose()
+  defeatPvp: number;
+
+  @Expose()
+  createdAt: Date;
+
+  @Expose()
+  updatedAt: Date;
 }

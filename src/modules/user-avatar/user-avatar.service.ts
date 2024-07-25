@@ -1,42 +1,39 @@
-import { AvatarRepository } from './avatar.repository';
 import { BusinessRuleException } from '@/helpers/error/BusinessRuleException';
-import { CreateAvatarDto } from './dto/create-avatar.dto';
+import { CreateUserAvatarDto } from './dto/create-user-avatar.dto';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { UserCharacterService } from '../user-character/user-character.service';
+import { UserAvatarRepository } from './user-avatar.repository';
+import { UserService } from '../user/user.service';
 
 @Injectable()
-export class AvatarService {
+export class UserAvatarService {
   constructor(
-    private repository: AvatarRepository,
-    @Inject(forwardRef(() => UserCharacterService))
-    private userCharacterService: UserCharacterService
+    private repository: UserAvatarRepository,
+    @Inject(forwardRef(() => UserService))
+    private userService: UserService
   ) {}
 
-  public async create(dto: CreateAvatarDto) {
-    const userCharacter = await this.userCharacterService.get(dto.userId);
-    const exists = await this.repository.existsByAvatarAndUserCharacterId(
-      dto.image,
-      userCharacter.id
-    );
+  public async create(dto: CreateUserAvatarDto) {
+    const user = await this.userService.get(dto.userId);
+    const exists = await this.repository.existsByAvatarAndUserCharacterId(dto.image, user.id);
     if (exists) {
       throw new BusinessRuleException('Já existe o avatar cadastrado');
     }
-    const user = await this.repository.save({
+    const save = await this.repository.save({
       data: {
         image: dto.image,
-        userCharacter: {
+        user: {
           connect: {
-            id: userCharacter.id,
+            id: user.id,
           },
         },
       },
     });
-    return user;
+    return save;
   }
 
   public async get(id: number, userId: number) {
-    const userCharacter = await this.userCharacterService.get(userId);
-    const find = await this.repository.find({ id, userCharacter });
+    const user = await this.userService.get(userId);
+    const find = await this.repository.find({ id, user });
     if (!find) {
       throw new BusinessRuleException('Avatar não encontrado');
     }
@@ -44,8 +41,8 @@ export class AvatarService {
   }
 
   public async getAll(userId: number) {
-    const userCharacter = await this.userCharacterService.get(userId);
-    const findAll = await this.repository.findAll({ where: { userCharacterId: userCharacter.id } });
+    const user = await this.userService.get(userId);
+    const findAll = await this.repository.findAll({ where: { user } });
     return findAll;
   }
 
