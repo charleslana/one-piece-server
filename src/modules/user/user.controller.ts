@@ -98,7 +98,7 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
-  @Post('all/paginated')
+  @Post('filter')
   public async filterUsersPaginated(
     @Query() page: PageDto,
     @Body() filterUserDto: FilterUserDto,
