@@ -106,6 +106,7 @@ export class UserController {
   ): Promise<UserPaginatedDto<GetUserExposeDto>> {
     this.logger.log(`filterUsersPaginated: Request made to ${req.url}`);
     this.logger.log(`Data sent: ${JSON.stringify(page)}`);
+    this.logger.log(`Data sent: ${JSON.stringify(filterUserDto)}`);
     const usersPaginated = await this.userService.filterUsersPaginated(page, filterUserDto);
     return plainToInstance(UserPaginatedDto<GetUserExposeDto>, usersPaginated);
   }
