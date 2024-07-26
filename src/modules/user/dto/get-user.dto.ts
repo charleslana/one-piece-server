@@ -63,6 +63,9 @@ export class GetUserDto {
   @Expose()
   @Type(() => GetUserAttributeDto)
   attribute: UserAttribute;
+
+  @Expose()
+  avatar: string | null;
 }
 
 export class GetUserExposeDto {
@@ -113,4 +116,7 @@ export class GetUserExposeDto {
 
   @Expose()
   updatedAt: Date;
+
+  @Expose()
+  avatar: string | null;
 }

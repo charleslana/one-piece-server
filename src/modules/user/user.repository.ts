@@ -3,6 +3,7 @@ import { PageDto } from '@/dto/page.dto';
 import { Prisma, User } from '@prisma/client';
 import { PrismaService } from '@/database/prisma.service';
 import { UserPaginatedDto } from './dto/user.paginated.dto';
+import { UserWithAvatar } from './interface/user';
 
 @Injectable()
 export class UserRepository {
@@ -61,11 +62,12 @@ export class UserRepository {
     });
   }
 
-  public async find(where: Prisma.UserWhereUniqueInput): Promise<User | null> {
+  public async find(where: Prisma.UserWhereUniqueInput): Promise<UserWithAvatar | null> {
     return this.prisma.user.findUnique({
       where,
       include: {
         attribute: true,
+        avatars: true,
       },
     });
   }
@@ -97,12 +99,16 @@ export class UserRepository {
   public async findAllPaginatedAndFilter(params: {
     page: PageDto;
     name?: string;
-  }): Promise<UserPaginatedDto<User[]>> {
+  }): Promise<UserPaginatedDto<UserWithAvatar[]>> {
     const { page, name } = params;
     const { page: currentPage, pageSize } = page;
     const offset = (currentPage - 1) * pageSize;
     const take = pageSize;
-    const where: Prisma.UserWhereInput = {};
+    const where: Prisma.UserWhereInput = {
+      name: {
+        not: null,
+      },
+    };
     if (name) {
       where.name = {
         contains: name,
@@ -115,7 +121,10 @@ export class UserRepository {
         skip: offset,
         take,
         where,
-        orderBy: { id: 'desc' },
+        orderBy: [{ level: 'desc' }, { id: 'desc' }],
+        include: {
+          avatars: true,
+        },
       }),
     ]);
     const totalPages = Math.ceil(totalCount / pageSize);

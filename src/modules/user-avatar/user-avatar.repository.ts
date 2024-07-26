@@ -26,10 +26,10 @@ export class UserAvatarRepository {
     take?: number;
     cursor?: Prisma.UserAvatarWhereUniqueInput;
     where?: Prisma.UserAvatarWhereInput;
-    orderBy?: Prisma.UserAvatarOrderByWithRelationInput;
+    orderBy?: Prisma.UserAvatarOrderByWithRelationInput[];
   }): Promise<UserAvatar[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.userAvatar.findMany({ skip, take, cursor, where, orderBy });
+    return this.prisma.userAvatar.findMany({ skip, take, cursor, where, orderBy: orderBy });
   }
 
   public async update(params: {

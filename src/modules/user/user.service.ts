@@ -33,7 +33,11 @@ export class UserService {
     if (!find) {
       throw new BusinessRuleException('Usuário não encontrado');
     }
-    return find;
+    const selectedAvatar = find.avatars.find((avatar) => avatar.selected === true);
+    return {
+      ...find,
+      avatar: selectedAvatar.image,
+    };
   }
 
   public async getAll() {
@@ -46,7 +50,17 @@ export class UserService {
       page,
       name: dto.name,
     });
-    return findAllPaginated;
+    const filteredResults = findAllPaginated.results.map((user) => {
+      const selectedAvatar = user.avatars.find((avatar) => avatar.selected === true);
+      return {
+        ...user,
+        avatar: selectedAvatar.image,
+      };
+    });
+    return {
+      ...findAllPaginated,
+      results: filteredResults,
+    };
   }
 
   public async exclude(id: number) {

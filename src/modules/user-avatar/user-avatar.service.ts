@@ -33,7 +33,7 @@ export class UserAvatarService {
 
   public async get(id: number, userId: number) {
     const user = await this.userService.get(userId);
-    const find = await this.repository.find({ id, user });
+    const find = await this.repository.find({ id, userId: user.id });
     if (!find) {
       throw new BusinessRuleException('Avatar não encontrado');
     }
@@ -42,7 +42,17 @@ export class UserAvatarService {
 
   public async getAll(userId: number) {
     const user = await this.userService.get(userId);
-    const findAll = await this.repository.findAll({ where: { user } });
+    const findAll = await this.repository.findAll({
+      where: { userId: user.id },
+      orderBy: [
+        {
+          selected: 'desc',
+        },
+        {
+          id: 'desc',
+        },
+      ],
+    });
     return findAll;
   }
 
