@@ -41,7 +41,7 @@ export class UserService {
     return findAll;
   }
 
-  public async getAllPaginatedAndFilter(page: PageDto, dto?: FilterUserDto) {
+  public async filterUsersPaginated(page: PageDto, dto?: FilterUserDto) {
     const findAllPaginated = await this.repository.findAllPaginatedAndFilter({
       page,
       name: dto.name,

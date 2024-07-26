@@ -98,15 +98,15 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('all/paginated')
-  public async getUsersPaginatedAndFilter(
+  @Post('all/paginated')
+  public async filterUsersPaginated(
     @Query() page: PageDto,
     @Body() filterUserDto: FilterUserDto,
     @Request() req: RequestExpress
   ): Promise<UserPaginatedDto<GetUserExposeDto>> {
-    this.logger.log(`getUsersPaginated: Request made to ${req.url}`);
+    this.logger.log(`filterUsersPaginated: Request made to ${req.url}`);
     this.logger.log(`Data sent: ${JSON.stringify(page)}`);
-    const usersPaginated = await this.userService.getAllPaginatedAndFilter(page, filterUserDto);
+    const usersPaginated = await this.userService.filterUsersPaginated(page, filterUserDto);
     return plainToInstance(UserPaginatedDto<GetUserExposeDto>, usersPaginated);
   }
 
