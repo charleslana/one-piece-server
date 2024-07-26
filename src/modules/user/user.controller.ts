@@ -26,6 +26,8 @@ import {
   UseGuards,
   Query,
   Logger,
+  HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 
 @Controller('user')
@@ -97,6 +99,7 @@ export class UserController {
     return plainToInstance(GetUserDto, user);
   }
 
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   @Post('filter')
   public async filterUsersPaginated(
