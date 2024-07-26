@@ -36,7 +36,7 @@ export class UserService {
     const selectedAvatar = find.avatars.find((avatar) => avatar.selected === true);
     return {
       ...find,
-      avatar: selectedAvatar.image,
+      avatar: selectedAvatar ? selectedAvatar.image : null,
     };
   }
 
