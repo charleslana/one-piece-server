@@ -66,6 +66,9 @@ export class GetUserDto {
 
   @Expose()
   avatar: string | null;
+
+  @Expose()
+  battlePower: number;
 }
 
 export class GetUserExposeDto {
@@ -119,4 +122,7 @@ export class GetUserExposeDto {
 
   @Expose()
   avatar: string | null;
+
+  @Expose()
+  battlePower: number;
 }

@@ -5,6 +5,7 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { PageDto } from '@/dto/page.dto';
 import { ResponseMessage } from '@/helpers/ResponseMessage';
 import { UpdateUserDto, UpdateUserPasswordDto } from './dto/update-user.dto';
+import { UserAttribute } from '@prisma/client';
 import { UserAvatarService } from '../user-avatar/user-avatar.service';
 import { UserRepository } from './user.repository';
 
@@ -34,9 +35,11 @@ export class UserService {
       throw new BusinessRuleException('Usuário não encontrado');
     }
     const selectedAvatar = find.avatars.find((avatar) => avatar.selected === true);
+    const battlePower = this.getBattlePower(find.attribute);
     return {
       ...find,
       avatar: selectedAvatar ? selectedAvatar.image : null,
+      battlePower,
     };
   }
 
@@ -52,9 +55,11 @@ export class UserService {
     });
     const filteredResults = findAllPaginated.results.map((user) => {
       const selectedAvatar = user.avatars.find((avatar) => avatar.selected === true);
+      const battlePower = this.getBattlePower(user.attribute);
       return {
         ...user,
         avatar: selectedAvatar.image,
+        battlePower,
       };
     });
     return {
@@ -117,5 +122,12 @@ export class UserService {
       },
     });
     return userCharacter;
+  }
+
+  private getBattlePower(userAttribute: UserAttribute): number {
+    const { strength, defense, agility, vitality, energy } = userAttribute;
+    const battlePower =
+      strength * 2 + defense * 1.5 + agility * 1.2 + vitality * 1.3 + energy * 1.1;
+    return Math.round(battlePower);
   }
 }

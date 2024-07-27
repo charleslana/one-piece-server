@@ -3,7 +3,7 @@ import { PageDto } from '@/dto/page.dto';
 import { Prisma, User } from '@prisma/client';
 import { PrismaService } from '@/database/prisma.service';
 import { UserPaginatedDto } from './dto/user.paginated.dto';
-import { UserWithAvatar } from './interface/user';
+import { UserWithAvatarAndAttribute } from './interface/user';
 
 @Injectable()
 export class UserRepository {
@@ -62,7 +62,9 @@ export class UserRepository {
     });
   }
 
-  public async find(where: Prisma.UserWhereUniqueInput): Promise<UserWithAvatar | null> {
+  public async find(
+    where: Prisma.UserWhereUniqueInput
+  ): Promise<UserWithAvatarAndAttribute | null> {
     return this.prisma.user.findUnique({
       where,
       include: {
@@ -99,7 +101,7 @@ export class UserRepository {
   public async findAllPaginatedAndFilter(params: {
     page: PageDto;
     name?: string;
-  }): Promise<UserPaginatedDto<UserWithAvatar[]>> {
+  }): Promise<UserPaginatedDto<UserWithAvatarAndAttribute[]>> {
     const { page, name } = params;
     const { page: currentPage, pageSize } = page;
     const offset = (currentPage - 1) * pageSize;
@@ -124,6 +126,7 @@ export class UserRepository {
         orderBy: [{ level: 'desc' }, { id: 'desc' }],
         include: {
           avatars: true,
+          attribute: true,
         },
       }),
     ]);
