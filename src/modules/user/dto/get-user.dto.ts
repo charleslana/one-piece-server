@@ -1,6 +1,13 @@
-import { BreedEnum, CharacterClassEnum, FactionEnum, SeaEnum, UserAttribute } from '@prisma/client';
 import { Expose, Type } from 'class-transformer';
 import { GetUserAttributeDto } from '@/modules/user-attribute/dto/get-user-attribute.dto';
+import {
+  BreedEnum,
+  CharacterClassEnum,
+  FactionEnum,
+  SeaEnum,
+  User,
+  UserAttribute,
+} from '@prisma/client';
 
 export class GetUserDto {
   @Expose()
@@ -125,4 +132,18 @@ export class GetUserExposeDto {
 
   @Expose()
   battlePower: number;
+}
+
+export class GetTopUsersByFactionDto {
+  @Expose()
+  @Type(() => GetUserExposeDto)
+  pirate: User;
+
+  @Expose()
+  @Type(() => GetUserExposeDto)
+  marine: User;
+
+  @Expose()
+  @Type(() => GetUserExposeDto)
+  revolutionary: User;
 }

@@ -8,6 +8,7 @@ import { UpdateUserDto, UpdateUserPasswordDto } from './dto/update-user.dto';
 import { UserAttribute } from '@prisma/client';
 import { UserAvatarService } from '../user-avatar/user-avatar.service';
 import { UserRepository } from './user.repository';
+import { UserWithAvatarAndAttribute } from './interface/user';
 
 @Injectable()
 export class UserService {
@@ -122,6 +123,27 @@ export class UserService {
       },
     });
     return userCharacter;
+  }
+
+  public async getTopUsersByFaction() {
+    const usersByFaction = await this.repository.findTopUsersByFaction();
+    const formattedResults: Record<string, UserWithAvatarAndAttribute[]> = {};
+    await Promise.all(
+      Object.entries(usersByFaction).map(async ([faction, users]) => {
+        formattedResults[faction] = await Promise.all(
+          users.map(async (user) => {
+            const selectedAvatar = user.avatars.find((avatar) => avatar.selected === true);
+            const battlePower = this.getBattlePower(user.attribute);
+            return {
+              ...user,
+              avatar: selectedAvatar ? selectedAvatar.image : null,
+              battlePower,
+            };
+          })
+        );
+      })
+    );
+    return formattedResults;
   }
 
   private getBattlePower(userAttribute: UserAttribute): number {

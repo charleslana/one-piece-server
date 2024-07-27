@@ -1,6 +1,6 @@
+import { FactionEnum, Prisma, User } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { PageDto } from '@/dto/page.dto';
-import { Prisma, User } from '@prisma/client';
 import { PrismaService } from '@/database/prisma.service';
 import { UserPaginatedDto } from './dto/user.paginated.dto';
 import { UserWithAvatarAndAttribute } from './interface/user';
@@ -141,5 +141,28 @@ export class UserRepository {
         hasNextPage,
       },
     };
+  }
+
+  public async findTopUsersByFaction(): Promise<Record<string, UserWithAvatarAndAttribute[]>> {
+    const factions = [FactionEnum.pirate, FactionEnum.marine, FactionEnum.revolutionary];
+    const result: Record<string, UserWithAvatarAndAttribute[]> = {};
+    for (const faction of factions) {
+      const users = await this.prisma.user.findMany({
+        where: {
+          faction,
+          name: {
+            not: null,
+          },
+        },
+        orderBy: [{ level: 'desc' }, { id: 'desc' }],
+        include: {
+          avatars: true,
+          attribute: true,
+        },
+        take: 10,
+      });
+      result[faction] = users;
+    }
+    return result;
   }
 }

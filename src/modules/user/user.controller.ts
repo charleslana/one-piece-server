@@ -2,7 +2,7 @@ import { AuthGuard } from '../auth/auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FilterUserDto } from './dto/filter-user.dto';
 import { FindOneParams } from '../find-one.params';
-import { GetUserDto, GetUserExposeDto } from './dto/get-user.dto';
+import { GetTopUsersByFactionDto, GetUserDto, GetUserExposeDto } from './dto/get-user.dto';
 import { PageDto } from '@/dto/page.dto';
 import { plainToInstance } from 'class-transformer';
 import { Request as RequestExpress } from 'express';
@@ -44,16 +44,6 @@ export class UserController {
     return plainToInstance(GetUserDto, user);
   }
 
-  @UseGuards(AuthGuard)
-  @Get(':id')
-  public async getUser(@Param() params: FindOneParams, @Request() req: RequestExpress) {
-    this.logger.log(`getUser: Request made to ${req.url}`);
-    this.logger.log(`Data sent: ${JSON.stringify(params)}`);
-    const { id } = params;
-    const user = await this.userService.get(id);
-    return plainToInstance(GetUserExposeDto, user);
-  }
-
   @UseGuards(AuthGuard, new RoleGuard([RoleEnum.admin]))
   @Get()
   public async getUsers(@Request() req: RequestExpress): Promise<GetUserDto[]> {
@@ -90,7 +80,7 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard, UserSocketExistsGuard)
-  @Get('profile/me')
+  @Get('me')
   public async getMe(@Request() req: RequestExpress) {
     this.logger.log(`getMe: Request made to ${req.url}`);
     this.logger.log(`Data sent: ${JSON.stringify(req.user.sub)}`);
@@ -123,5 +113,23 @@ export class UserController {
     updateUserDto.userId = req.user.sub;
     const user = await this.userService.updateUserCharacter(updateUserDto);
     return plainToInstance(GetUserDto, user);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('top-by-faction')
+  async getTopUsersByFaction(@Request() req: RequestExpress) {
+    this.logger.log(`getTopUsersByFaction: Request made to ${req.url}`);
+    const user = await this.userService.getTopUsersByFaction();
+    return plainToInstance(GetTopUsersByFactionDto, user);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get(':id')
+  public async getUser(@Param() params: FindOneParams, @Request() req: RequestExpress) {
+    this.logger.log(`getUser: Request made to ${req.url}`);
+    this.logger.log(`Data sent: ${JSON.stringify(params)}`);
+    const { id } = params;
+    const user = await this.userService.get(id);
+    return plainToInstance(GetUserExposeDto, user);
   }
 }
