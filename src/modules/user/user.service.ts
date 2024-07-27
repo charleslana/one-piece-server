@@ -167,6 +167,29 @@ export class UserService {
     return formattedResults;
   }
 
+  public async getTopUserByConsecutiveVictory() {
+    const find = await this.repository.findTopUserByConsecutiveVictory();
+    if (!find) {
+      throw new BusinessRuleException('Usuário não encontrado');
+    }
+    const selectedAvatar = find.avatars.find((avatar) => avatar.selected === true);
+    return {
+      ...find,
+      avatar: selectedAvatar ? selectedAvatar.image : null,
+    };
+  }
+
+  public async getTopThreeUsersByCoin() {
+    const users = await this.repository.findTopThreeUsersByCoin();
+    return users.map((user) => {
+      const selectedAvatar = user.avatars.find((avatar) => avatar.selected === true);
+      return {
+        ...user,
+        avatar: selectedAvatar ? selectedAvatar.image : null,
+      };
+    });
+  }
+
   private getBattlePower(userAttribute: UserAttribute): number {
     const { strength, defense, agility, vitality, energy } = userAttribute;
     const battlePower =

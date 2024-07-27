@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { PageDto } from '@/dto/page.dto';
 import { PrismaService } from '@/database/prisma.service';
 import { UserPaginatedDto } from './dto/user.paginated.dto';
-import { UserWithAvatarAndAttribute } from './interface/user';
+import { UserWithAvatar, UserWithAvatarAndAttribute } from './interface/user';
 
 @Injectable()
 export class UserRepository {
@@ -193,5 +193,37 @@ export class UserRepository {
       result[characterClass] = users;
     }
     return result;
+  }
+
+  public async findTopUserByConsecutiveVictory(): Promise<UserWithAvatar | null> {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        name: {
+          not: null,
+        },
+      },
+      orderBy: [{ consecutiveVictory: 'desc' }, { id: 'desc' }],
+      include: {
+        avatars: true,
+      },
+    });
+    return user;
+  }
+
+  public async findTopThreeUsersByCoin(): Promise<UserWithAvatar[]> {
+    const users = await this.prisma.user.findMany({
+      where: {
+        name: {
+          not: null,
+        },
+      },
+      orderBy: [{ coin: 'desc' }, { id: 'desc' }],
+      take: 3,
+      include: {
+        avatars: true,
+        attribute: true,
+      },
+    });
+    return users;
   }
 }

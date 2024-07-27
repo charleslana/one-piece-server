@@ -137,6 +137,22 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
+  @Get('top-by-consecutive-victory')
+  public async getTopUserByConsecutiveVictory(@Request() req: RequestExpress) {
+    this.logger.log(`getTopUserByConsecutiveVictory: Request made to ${req.url}`);
+    const user = await this.userService.getTopUserByConsecutiveVictory();
+    return plainToInstance(GetUserExposeDto, user);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('top-three-by-coin')
+  async getTopThreeUsersByCoin(@Request() req: RequestExpress): Promise<GetUserExposeDto[]> {
+    this.logger.log(`getTopThreeUsersByCoin: Request made to ${req.url}`);
+    const users = await this.userService.getTopThreeUsersByCoin();
+    return plainToInstance(GetUserExposeDto, users);
+  }
+
+  @UseGuards(AuthGuard)
   @Get(':id')
   public async getUser(@Param() params: FindOneParams, @Request() req: RequestExpress) {
     this.logger.log(`getUser: Request made to ${req.url}`);

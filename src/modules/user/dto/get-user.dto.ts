@@ -76,6 +76,9 @@ export class GetUserDto {
 
   @Expose()
   battlePower: number;
+
+  @Expose()
+  consecutiveVictory: number;
 }
 
 export class GetUserExposeDto {
@@ -132,6 +135,9 @@ export class GetUserExposeDto {
 
   @Expose()
   battlePower: number;
+
+  @Expose()
+  consecutiveVictory: number;
 }
 
 export class GetTopUsersByFactionDto {

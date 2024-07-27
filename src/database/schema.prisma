@@ -40,29 +40,30 @@ enum CharacterClassEnum {
 }
 
 model User {
-  id             Int                 @id @default(autoincrement())
-  email          String              @unique @db.VarChar(255)
-  password       String
-  bannedTime     DateTime?           @map("banned_time")
-  name           String?             @unique @db.VarChar(20)
-  faction        FactionEnum?
-  sea            SeaEnum?
-  breed          BreedEnum?
-  characterClass CharacterClassEnum? @map("character_class")
-  level          Int                 @default(1)
-  coin           Int                 @default(5000)
-  gold           Int                 @default(0)
-  exp            Int                 @default(0)
-  stamina        Int                 @default(100)
-  victoryPve     Int                 @default(0) @map("victory_pve")
-  defeatPve      Int                 @default(0) @map("defeat_pve")
-  victoryPvp     Int                 @default(0) @map("victory_pvp")
-  defeatPvp      Int                 @default(0) @map("defeat_pvp")
-  createdAt      DateTime            @default(now()) @map("created_at")
-  updatedAt      DateTime            @default(now()) @updatedAt @map("updated_at")
-  roles          Role[]
-  attribute      UserAttribute?
-  avatars        UserAvatar[]
+  id                 Int                 @id @default(autoincrement())
+  email              String              @unique @db.VarChar(255)
+  password           String
+  bannedTime         DateTime?           @map("banned_time")
+  name               String?             @unique @db.VarChar(20)
+  faction            FactionEnum?
+  sea                SeaEnum?
+  breed              BreedEnum?
+  characterClass     CharacterClassEnum? @map("character_class")
+  level              Int                 @default(1)
+  coin               Int                 @default(5000)
+  gold               Int                 @default(0)
+  exp                Int                 @default(0)
+  stamina            Int                 @default(100)
+  victoryPve         Int                 @default(0) @map("victory_pve")
+  defeatPve          Int                 @default(0) @map("defeat_pve")
+  victoryPvp         Int                 @default(0) @map("victory_pvp")
+  defeatPvp          Int                 @default(0) @map("defeat_pvp")
+  consecutiveVictory Int                 @default(0) @map("consecutive_victory")
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @default(now()) @updatedAt @map("updated_at")
+  roles              Role[]
+  attribute          UserAttribute?
+  avatars            UserAvatar[]
 
   @@map(name: "tb_user")
 }
