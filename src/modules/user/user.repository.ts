@@ -1,4 +1,4 @@
-import { FactionEnum, Prisma, User } from '@prisma/client';
+import { CharacterClassEnum, FactionEnum, Prisma, User } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { PageDto } from '@/dto/page.dto';
 import { PrismaService } from '@/database/prisma.service';
@@ -162,6 +162,35 @@ export class UserRepository {
         take: 10,
       });
       result[faction] = users;
+    }
+    return result;
+  }
+
+  public async findTopUsersByCharacterClass(): Promise<
+    Record<string, UserWithAvatarAndAttribute[]>
+  > {
+    const characterClasses = [
+      CharacterClassEnum.swordsman,
+      CharacterClassEnum.shooter,
+      CharacterClassEnum.fighter,
+    ];
+    const result: Record<string, UserWithAvatarAndAttribute[]> = {};
+    for (const characterClass of characterClasses) {
+      const users = await this.prisma.user.findMany({
+        where: {
+          characterClass,
+          name: {
+            not: null,
+          },
+        },
+        orderBy: [{ level: 'desc' }, { id: 'desc' }],
+        include: {
+          avatars: true,
+          attribute: true,
+        },
+        take: 10,
+      });
+      result[characterClass] = users;
     }
     return result;
   }

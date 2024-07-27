@@ -2,7 +2,6 @@ import { AuthGuard } from '../auth/auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FilterUserDto } from './dto/filter-user.dto';
 import { FindOneParams } from '../find-one.params';
-import { GetTopUsersByFactionDto, GetUserDto, GetUserExposeDto } from './dto/get-user.dto';
 import { PageDto } from '@/dto/page.dto';
 import { plainToInstance } from 'class-transformer';
 import { Request as RequestExpress } from 'express';
@@ -13,6 +12,12 @@ import { UpdateUserDto, UpdateUserPasswordDto } from './dto/update-user.dto';
 import { UserPaginatedDto } from './dto/user.paginated.dto';
 import { UserService } from './user.service';
 import { UserSocketExistsGuard } from '../auth/user.socket.exists.guard';
+import {
+  GetTopUsersByCharacterClassDto,
+  GetTopUsersByFactionDto,
+  GetUserDto,
+  GetUserExposeDto,
+} from './dto/get-user.dto';
 import {
   Body,
   Controller,
@@ -121,6 +126,14 @@ export class UserController {
     this.logger.log(`getTopUsersByFaction: Request made to ${req.url}`);
     const user = await this.userService.getTopUsersByFaction();
     return plainToInstance(GetTopUsersByFactionDto, user);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('top-by-character-class')
+  async getTopUsersByCharacterClass(@Request() req: RequestExpress) {
+    this.logger.log(`getTopUsersByCharacterClass: Request made to ${req.url}`);
+    const user = await this.userService.getTopUsersByCharacterClass();
+    return plainToInstance(GetTopUsersByCharacterClassDto, user);
   }
 
   @UseGuards(AuthGuard)

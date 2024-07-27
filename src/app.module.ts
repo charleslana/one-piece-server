@@ -2,9 +2,10 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
-import { CronjobService } from './modules/cronjob/cronjob.service';
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { SocketModule } from './modules/socket/socket.module';
+import { TaskService } from './task/task.service';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { UserAttributeModule } from './modules/user-attribute/user-attribute.module';
 import { UserAvatarModule } from './modules/user-avatar/user-avatar.module';
@@ -14,6 +15,7 @@ import { ValidationInterceptor } from './helpers/interceptor/ValidationIntercept
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     UserModule,
     AuthModule,
     ThrottlerModule.forRoot([
@@ -37,7 +39,7 @@ import { ValidationInterceptor } from './helpers/interceptor/ValidationIntercept
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
-    CronjobService,
+    TaskService,
   ],
 })
 export class AppModule {}

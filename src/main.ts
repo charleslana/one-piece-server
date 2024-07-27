@@ -1,5 +1,4 @@
 import { AppModule } from './app.module';
-import { CronjobService } from './modules/cronjob/cronjob.service';
 import { NestFactory } from '@nestjs/core';
 import { setup } from './setup';
 import { ValidationPipe } from '@nestjs/common';
@@ -13,8 +12,6 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
   setup(app);
   await app.listen(process.env.PORT ?? 3000);
-  const cron = new CronjobService();
-  cron.start();
 }
 
 bootstrap();

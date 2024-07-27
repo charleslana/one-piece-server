@@ -146,6 +146,27 @@ export class UserService {
     return formattedResults;
   }
 
+  public async getTopUsersByCharacterClass() {
+    const usersByCharacterClass = await this.repository.findTopUsersByCharacterClass();
+    const formattedResults: Record<string, UserWithAvatarAndAttribute[]> = {};
+    await Promise.all(
+      Object.entries(usersByCharacterClass).map(async ([characterClass, users]) => {
+        formattedResults[characterClass] = await Promise.all(
+          users.map(async (user) => {
+            const selectedAvatar = user.avatars.find((avatar) => avatar.selected === true);
+            const battlePower = this.getBattlePower(user.attribute);
+            return {
+              ...user,
+              avatar: selectedAvatar ? selectedAvatar.image : null,
+              battlePower,
+            };
+          })
+        );
+      })
+    );
+    return formattedResults;
+  }
+
   private getBattlePower(userAttribute: UserAttribute): number {
     const { strength, defense, agility, vitality, energy } = userAttribute;
     const battlePower =

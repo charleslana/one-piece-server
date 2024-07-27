@@ -147,3 +147,17 @@ export class GetTopUsersByFactionDto {
   @Type(() => GetUserExposeDto)
   revolutionary: User;
 }
+
+export class GetTopUsersByCharacterClassDto {
+  @Expose()
+  @Type(() => GetUserExposeDto)
+  swordsman: User;
+
+  @Expose()
+  @Type(() => GetUserExposeDto)
+  shooter: User;
+
+  @Expose()
+  @Type(() => GetUserExposeDto)
+  fighter: User;
+}
