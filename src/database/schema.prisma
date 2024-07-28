@@ -64,6 +64,7 @@ model User {
   roles              Role[]
   attribute          UserAttribute?
   avatars            UserAvatar[]
+  newspapers         UserNewspaper[]
 
   @@map(name: "tb_user")
 }
@@ -103,4 +104,28 @@ model UserAvatar {
   userId    Int      @map("user_id")
 
   @@map(name: "tb_user_avatar")
+}
+
+model Newspaper {
+  id             Int             @id @default(autoincrement())
+  title          String          @db.VarChar(255)
+  description    String          @db.VarChar(1000)
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @default(now()) @updatedAt @map("updated_at")
+  usersNewspaper UserNewspaper[]
+
+  @@map(name: "tb_newspaper")
+}
+
+model UserNewspaper {
+  id          Int       @id @default(autoincrement())
+  like        Boolean
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int       @map("user_id")
+  newspaper   Newspaper @relation(fields: [newspaperId], references: [id], onDelete: Cascade)
+  newspaperId Int       @map("newspaper_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  @@map(name: "tb_user_newspaper")
 }

@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { Module } from '@nestjs/common';
+import { NewspaperModule } from './modules/newspaper/newspaper.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SocketModule } from './modules/socket/socket.module';
 import { TaskService } from './task/task.service';
@@ -27,6 +28,7 @@ import { ValidationInterceptor } from './helpers/interceptor/ValidationIntercept
     SocketModule,
     UserAvatarModule,
     UserAttributeModule,
+    NewspaperModule,
   ],
   controllers: [AppController, UserController],
   providers: [

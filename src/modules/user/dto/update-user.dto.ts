@@ -1,5 +1,6 @@
 import { BreedEnum, CharacterClassEnum, FactionEnum, SeaEnum } from '@prisma/client';
 import { Exclude, Transform } from 'class-transformer';
+import { maximumInt32 } from '@/utils/utils';
 import { UserDto } from './user.dto';
 import {
   IsEnum,
@@ -7,6 +8,7 @@ import {
   IsNotEmpty,
   IsNumber,
   Matches,
+  Max,
   MaxLength,
   Min,
   MinLength,
@@ -53,6 +55,7 @@ export class UpdateUserDto {
 
   @IsNumber()
   @Min(1)
+  @Max(maximumInt32)
   @IsInt()
   @Transform(({ value }) => parseInt(value))
   avatarId: number;

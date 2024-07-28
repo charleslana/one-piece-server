@@ -1,8 +1,10 @@
+import { maximumInt32 } from '@/utils/utils';
 import { Transform } from 'class-transformer';
 import {
   IsInt,
   IsNotEmpty,
   IsNumber,
+  Max,
   MaxLength,
   Min,
   MinLength,
@@ -12,6 +14,7 @@ import {
 export class CreateUserAvatarDto {
   @IsNumber()
   @Min(1)
+  @Max(maximumInt32)
   @IsInt()
   @Transform(({ value }) => parseInt(value))
   userId: number;
