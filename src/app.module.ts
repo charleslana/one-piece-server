@@ -12,6 +12,7 @@ import { UserAttributeModule } from './modules/user-attribute/user-attribute.mod
 import { UserAvatarModule } from './modules/user-avatar/user-avatar.module';
 import { UserController } from './modules/user/user.controller';
 import { UserModule } from './modules/user/user.module';
+import { UserNewspaperModule } from './modules/user-newspaper/user-newspaper.module';
 import { ValidationInterceptor } from './helpers/interceptor/ValidationInterceptor';
 
 @Module({
@@ -29,6 +30,7 @@ import { ValidationInterceptor } from './helpers/interceptor/ValidationIntercept
     UserAvatarModule,
     UserAttributeModule,
     NewspaperModule,
+    UserNewspaperModule,
   ],
   controllers: [AppController, UserController],
   providers: [
