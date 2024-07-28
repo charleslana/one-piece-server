@@ -24,7 +24,7 @@ export class UserNewspaperService {
       if (dto.like) {
         return this.likeNewspaper(userNewspaper.id);
       }
-      return this.unlikeNewspaper(userNewspaper.id);
+      return this.dislikeNewspaper(userNewspaper.id);
     }
     const save = await this.repository.save({
       data: {
@@ -73,7 +73,7 @@ export class UserNewspaperService {
     return updated;
   }
 
-  private async unlikeNewspaper(id: number) {
+  private async dislikeNewspaper(id: number) {
     const updated = await this.repository.update({
       where: { id },
       data: {
