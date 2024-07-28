@@ -1,6 +1,7 @@
 import { BusinessRuleException } from '@/helpers/error/BusinessRuleException';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FilterUserDto } from './dto/filter-user.dto';
+import { formatDate } from '@/utils/utils';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { PageDto } from '@/dto/page.dto';
 import { ResponseMessage } from '@/helpers/ResponseMessage';
@@ -188,6 +189,21 @@ export class UserService {
         avatar: selectedAvatar ? selectedAvatar.image : null,
       };
     });
+  }
+
+  public async validateUserBanned(bannedTime: Date | null): Promise<void> {
+    const isUserBanned = bannedTime != null && bannedTime > new Date();
+    if (isUserBanned) {
+      throw new BusinessRuleException(`O usuário está banido até ${formatDate(bannedTime)}`, 403);
+    }
+  }
+
+  public async validateUserCompleted(id: number): Promise<void> {
+    const user = await this.get(id);
+    if (!user.name) {
+      throw new BusinessRuleException('Personagem não está habilitado.');
+    }
+    await this.validateUserBanned(user.bannedTime);
   }
 
   private getBattlePower(userAttribute: UserAttribute): number {

@@ -29,6 +29,7 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new UnauthorizedException('Usuário ou senha inválida');
     }
+    await this.userService.validateUserBanned(user.bannedTime);
     const payload: TokenPayload = { sub: user.id, email: user.email, roles: user.roles };
     const access_token = await this.jwtService.signAsync(payload);
     return {

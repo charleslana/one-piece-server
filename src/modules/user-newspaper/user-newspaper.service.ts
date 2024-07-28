@@ -15,6 +15,7 @@ export class UserNewspaperService {
 
   public async create(dto: CreateUserNewspaperDto) {
     const user = await this.userService.get(dto.userId);
+    await this.userService.validateUserCompleted(user.id);
     const newspaper = await this.newspaperService.get(dto.newspaperId);
     const userNewspaper = await this.repository.findByUserIdAndNewspaperId(
       dto.userId,
