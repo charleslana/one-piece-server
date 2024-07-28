@@ -1,4 +1,5 @@
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
+import { GetUserNewspaperDto } from '@/modules/user-newspaper/dto/get-user-newspaper.dto';
 
 export class GetNewspaperDto {
   @Expose()
@@ -15,4 +16,8 @@ export class GetNewspaperDto {
 
   @Expose()
   updatedAt: Date;
+
+  @Expose()
+  @Type(() => GetUserNewspaperDto)
+  usersNewspaper: GetUserNewspaperDto[];
 }

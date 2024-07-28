@@ -29,7 +29,16 @@ export class NewspaperRepository {
     orderBy?: Prisma.NewspaperOrderByWithRelationInput[];
   }): Promise<Newspaper[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.newspaper.findMany({ skip, take, cursor, where, orderBy: orderBy });
+    return this.prisma.newspaper.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy: orderBy,
+      include: {
+        usersNewspaper: true,
+      },
+    });
   }
 
   public async update(params: {
