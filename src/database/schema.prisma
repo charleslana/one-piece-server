@@ -65,6 +65,8 @@ model User {
   attribute          UserAttribute?
   avatars            UserAvatar[]
   newspapers         UserNewspaper[]
+  messagesReceived   UserMessage[]       @relation("User")
+  messagesSent       UserMessage[]       @relation("Sender")
 
   @@map(name: "tb_user")
 }
@@ -128,4 +130,19 @@ model UserNewspaper {
   updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at")
 
   @@map(name: "tb_user_newspaper")
+}
+
+model UserMessage {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(100)
+  description String   @db.VarChar(1000)
+  isRead      Boolean  @default(false) @map("is_read")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  userId      Int      @map("user_id")
+  user        User     @relation("User", fields: [userId], references: [id], onDelete: Cascade)
+  senderId    Int?     @map("sender_id")
+  sender      User?    @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@map(name: "tb_user_message")
 }

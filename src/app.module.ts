@@ -11,6 +11,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { UserAttributeModule } from './modules/user-attribute/user-attribute.module';
 import { UserAvatarModule } from './modules/user-avatar/user-avatar.module';
 import { UserController } from './modules/user/user.controller';
+import { UserMessageModule } from './modules/user-message/user-message.module';
 import { UserModule } from './modules/user/user.module';
 import { UserNewspaperModule } from './modules/user-newspaper/user-newspaper.module';
 import { ValidationInterceptor } from './helpers/interceptor/ValidationInterceptor';
@@ -31,6 +32,7 @@ import { ValidationInterceptor } from './helpers/interceptor/ValidationIntercept
     UserAttributeModule,
     NewspaperModule,
     UserNewspaperModule,
+    UserMessageModule,
   ],
   controllers: [AppController, UserController],
   providers: [

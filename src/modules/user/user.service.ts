@@ -206,6 +206,14 @@ export class UserService {
     await this.validateUserBanned(user.bannedTime);
   }
 
+  public async getUserByName(name: string) {
+    const find = await this.repository.find({ name });
+    if (!find) {
+      throw new BusinessRuleException('Usuário não encontrado pelo nome');
+    }
+    return find;
+  }
+
   private getBattlePower(userAttribute: UserAttribute): number {
     const { strength, defense, agility, vitality, energy } = userAttribute;
     const battlePower =

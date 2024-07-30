@@ -29,14 +29,14 @@ export class UserNewspaperController {
   @UseGuards(AuthGuard)
   @Post()
   public async createUserNewspaper(
-    @Body() createNewspaperDto: CreateUserNewspaperDto,
+    @Body() createUserNewspaperDto: CreateUserNewspaperDto,
     @Request() req: RequestExpress
   ) {
     this.logger.log(`createUserNewspaper: Request made to ${req.url}`);
-    this.logger.log(`Data sent: ${JSON.stringify(createNewspaperDto)}`);
+    this.logger.log(`Data sent: ${JSON.stringify(createUserNewspaperDto)}`);
     this.logger.log(`Data sent: ${JSON.stringify(req.user.sub)}`);
-    createNewspaperDto.userId = req.user.sub;
-    const newspaper = await this.userNewspaperService.create(createNewspaperDto);
+    createUserNewspaperDto.userId = req.user.sub;
+    const newspaper = await this.userNewspaperService.create(createUserNewspaperDto);
     return plainToInstance(GetUserNewspaperDto, newspaper);
   }
 
@@ -58,6 +58,7 @@ export class UserNewspaperController {
     @Request() req: RequestExpress
   ): Promise<GetUserNewspaperDto[]> {
     this.logger.log(`getUserNewspapers: Request made to ${req.url}`);
+    this.logger.log(`Data sent: ${JSON.stringify(params)}`);
     const { id } = params;
     const newspapers = await this.userNewspaperService.getAll(id);
     return plainToInstance(GetUserNewspaperDto, newspapers);
