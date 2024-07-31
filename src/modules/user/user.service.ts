@@ -207,7 +207,7 @@ export class UserService {
   }
 
   public async getUserByName(name: string) {
-    const find = await this.repository.find({ name });
+    const find = await this.repository.findByName(name);
     if (!find) {
       throw new BusinessRuleException('Usuário não encontrado pelo nome');
     }
